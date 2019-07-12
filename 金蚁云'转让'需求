@@ -1,0 +1,48 @@
+
+-- 证书表
+
+CREATE TABLE `t_cert` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '表唯一标识',
+  `cert_dn` varchar(255) NOT NULL COMMENT '证书DN',
+  `ref_no` varchar(255) NOT NULL COMMENT '参考号',
+  `sign_cert_pem` varchar(2000) NOT NULL COMMENT '签名证书',
+  `create_by` bigint(20) DEFAULT NULL COMMENT '证书所有人',
+  `cert_type` varchar(20) DEFAULT NULL COMMENT '证书类型',
+  `start_time` datetime DEFAULT NULL COMMENT '证书起始时间',
+  `end_time` datetime DEFAULT NULL COMMENT '证书过期时间',
+  `cert_status_code` tinyint(3) DEFAULT NULL COMMENT '证书状态编码 3-未下载4-激活5-冻结6-吊销',
+  `create_time` datetime DEFAULT NULL COMMENT '数据创建时间',
+  `update_by` varchar(255) DEFAULT NULL COMMENT '最后更新人',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='证书表';
+
+
+CREATE TABLE `t_receivable_trans` (
+  `id` bigint(20) NOT NULL COMMENT '表唯一id',
+  `receivable_no` varchar(64) NOT NULL COMMENT '应收账款编号(t_receivable的receivable_no)',
+  `transferor_type` int(1) unsigned NOT NULL DEFAULT '1' COMMENT '出让人身份类型（1企业，2个体）',
+  `transferor_cert_type` int(1) unsigned NOT NULL DEFAULT '7' COMMENT '出让人证件类型 7-统一社会信用代码',
+  `transferor_id` bigint(20) NOT NULL COMMENT '出让人id（关联表t_company的id）',
+  `transferor_cert_no` varchar(20) NOT NULL COMMENT '出让方证件号码',
+  `transferor_acc` varchar(255) NOT NULL COMMENT '出让人账号',
+  `assignee_type` int(1) unsigned NOT NULL DEFAULT '1' COMMENT '受让人身份类型（1企业，2个体）',
+  `assignee_cert_type` int(1) NOT NULL DEFAULT '7' COMMENT '受让人证件类型',
+  `assignee_id` bigint(20) NOT NULL COMMENT '受让人id(关联表t_company的id)',
+  `assignee_acc` varchar(255) NOT NULL COMMENT '受让人账号',
+  `assignee_cert_no` varchar(20) NOT NULL COMMENT '受让方证件号码',
+  `trade_type` int(1) unsigned NOT NULL DEFAULT '1' COMMENT '交易类型 1-转让 2-支付',
+  `interest_rate` decimal(5,2) NOT NULL COMMENT '转让利息',
+  `amount` bigint(20) NOT NULL COMMENT '转让金额',
+  `price_type` int(1) unsigned NOT NULL COMMENT '转出价格类型',
+  `app_serial_no` varchar(100) DEFAULT NULL COMMENT '申请流水号',
+  `status` int(1) NOT NULL COMMENT '状态 1-转让/支付成功，2-待受让方确认，3-转让/支付失败，4-经办发起成功',
+  `pid` bigint(20) DEFAULT NULL COMMENT '上一次转让记录id（关联本表id）',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `create_by` varchar(255) NOT NULL COMMENT '创建者',
+  `update_by` varchar(255) NOT NULL COMMENT '更新者',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `remark` varchar(526) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='应收账款转让记录表';

@@ -1,0 +1,16 @@
+数据库连接域名
+  m0.findb.fdd
+
+MQ连接域名
+  mq.pay.dc.fdd
+    vhsot:FIN   FIN/fI2mQ1wE8v
+
+
+平台：金融平台生产环境Rabbitmq
+  地址：http://rmq01.pay.fangdd.cn
+平台：金融平台预发布环境Rabbitmq
+  地址：http://mq.pay.fangdd.com.cn
+平台：金融平台测试环境Rabbitmq
+  地址：http://10.0.6.60:15672
+平台：金融平台开发环境Rabbitmq
+  地址：http://10.0.5.67:15672
