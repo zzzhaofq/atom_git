@@ -1,0 +1,58 @@
+-- 互金工作流sql
+
+CREATE TABLE `fin_business_instance`  (
+  `business_instance_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '工作流与业务关系ID，该ID在启动工作流时传入给工作流. 对应workflow中的business_key',
+  `process_instance_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '工作流的实例id.',
+  `business_type` int(11) NOT NULL COMMENT '业务类型',
+  `business_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '业务ID',
+  `service_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '服务名称, 可以是一个接入的微服务，也可以是一个抽象的系统概念，比如B端，或者C端',
+  `org_id` int(10) UNSIGNED NOT NULL COMMENT '流程实例所属组织ID，比如：运营商ID',
+  `sub_org_id` int(10) UNSIGNED NULL DEFAULT NULL COMMENT '流程实例所属子组织ID，比如：分公司ID',
+  `current_node` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '当前已完成的节点.',
+  `status` int(11) NOT NULL COMMENT '状态，1=审批中; 2=审批拒绝; 3=审批通过; 4=已撤销',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注信息.',
+  `create_user_id` bigint(20) NOT NULL COMMENT '创建人',
+  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
+  `update_user_id` bigint(20) NOT NULL COMMENT '更新人',
+  `update_time` datetime(0) NOT NULL COMMENT '更新时间',
+  PRIMARY KEY (`business_instance_id`) USING BTREE,
+  INDEX `idx_bt_bi_st`(`business_type`, `business_id`, `status`) USING BTREE,
+  INDEX `idx_sn_oi_soi_bt`(`service_name`, `org_id`, `sub_org_id`, `business_type`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程实例与业务关系表' ROW_FORMAT = Dynamic;
+
+
+CREATE TABLE `fin_business_process`  (
+  `business_process_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '流程定义ID',
+  `business_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '业务名称',
+  `business_type` int(11) NOT NULL COMMENT '业务类型，唯一',
+  `process_define_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '流程编码, 唯一.',
+  `service_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '服务名称, 可以是一个接入的微服务，也可以是一个抽象的系统概念，比如B端，或者C端',
+  `status` int(11) NOT NULL COMMENT '状态，1=启用；2=已停用.',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注信息.',
+  `create_user_id` bigint(20) NOT NULL COMMENT '创建人',
+  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
+  `update_user_id` bigint(20) NOT NULL COMMENT '更新人',
+  `update_time` datetime(0) NOT NULL COMMENT '更新时间',
+  PRIMARY KEY (`business_process_id`) USING BTREE,
+  UNIQUE INDEX `uk_business_type`(`business_type`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '业务类型与流程定义关系表' ROW_FORMAT = Dynamic;
+
+
+CREATE TABLE `fin_business_task`  (
+  `business_task_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '审批明细id，记录每一个审批过程',
+  `business_instance_id` bigint(20) NOT NULL COMMENT '冗余字段, 工作流与业务关系id',
+  `business_type` int(11) NOT NULL COMMENT '冗余字段, 业务类型',
+  `business_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '冗余字段, 业务ID',
+  `task_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '工作流中的任务ID',
+  `task_def_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '任务定义编码',
+  `approve_result` int(11) NULL DEFAULT NULL COMMENT '审批结果，1=同意;2=拒绝;3=撤销',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '审批意见',
+  `create_user_id` bigint(20) NOT NULL COMMENT '创建人',
+  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
+  `update_user_id` bigint(20) NOT NULL COMMENT '更新人',
+  `update_time` datetime NOT NULL COMMENT '更新时间',
+  PRIMARY KEY (`business_task_id`) USING BTREE,
+  INDEX `idx_business_instance_id`(`business_instance_id`) USING BTREE,
+  INDEX `idx_bt_bi`(`business_type`, `business_id`) USING BTREE,
+  INDEX `idx_task_id`(`task_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程已审批的任务明细表,记录审批任务' ROW_FORMAT = Dynamic;
